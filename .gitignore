@@ -1,8 +1,0 @@
-*.bak
-*.orig
-*.swo
-*.swp
-/tmp/
-/nbproject/private/
-wp-config.php
-/.gitignore
