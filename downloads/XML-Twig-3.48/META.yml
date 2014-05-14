@@ -1,0 +1,58 @@
+---
+abstract: 'XML, The Perl Way'
+author:
+  - 'Michel Rodriguez <mirod@cpan.org>'
+build_requires:
+  ExtUtils::MakeMaker: 0
+configure_requires:
+  ExtUtils::MakeMaker: 0
+distribution_type: module
+dynamic_config: 0
+generated_by: 'ExtUtils::MakeMaker version 6.57_05'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: XML-Twig
+no_index:
+  directory:
+    - t
+    - inc
+prereqs:
+  build:
+    requires:
+      ExtUtils::MakeMaker: 0
+  configure:
+    requires:
+      ExtUtils::MakeMaker: 0
+  runtime:
+    recommends:
+      Encode: 2.42_01
+      Scalar::Util: 1.23
+      XML::XPathEngine: 0.13
+    requires:
+      XML::Parser: 2.23
+    suggests:
+      HTML::Entities: 3.69
+      HTML::Entities::Numbered: 0.04
+      HTML::Tidy: 1.50
+      HTML::TreeBuilder: 4.2
+      LWP: 6.04
+      Text::Wrap: 2009.0305
+      Tie::IxHash: 1.22
+  test:
+    recommends:
+      IO::CaptureOutput: 1.1102
+      IO::Scalar: 2.110
+      Test: 1.25_02
+    suggests:
+      Test::Pod: 1.45
+      XML::Filter::BufferText: 1.01
+      XML::Handler::YAWriter: 0.23
+      XML::SAX::Writer: 0.53
+      XML::Simple: 2.18
+requires:
+  XML::Parser: 2.23
+resources:
+  repository: http://github.com/mirod/xmltwig
+version: 3.48

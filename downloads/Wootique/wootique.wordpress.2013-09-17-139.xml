@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<item>
+		<title>Full Width</title>
+		<link>http://demo2.woothemes.com/wootique/templates/full-width/</link>
+		<pubDate>Sat, 09 Jan 2010 10:44:34 +0000</pubDate>
+		<dc:creator>woostore</dc:creator>
+		<guid isPermaLink="false">http://localhost/test/?page_id=28</guid>
+		<description></description>
+		<content:encoded><![CDATA[Euismod amet leo, cras et massa, eleifend egestas. Urna in nunc, nunc vivamus. Cum arcu pretium, sed sed. In nonummy, tempor molestie id, omnis tellus. A risus dolor, vitae et donec, mauris amet posuere. Donec in, nonummy dolor luctus. Laoreet ligula, pretium nisl eleifend, malesuada tincidunt cursus. Congue velit iaculis.
+
+Tincidunt varius sequi, integer magna ac, donec curabitur. Rhoncus sed. Lectus vitae augue, mauris tincidunt. Ut nec fermentum, dolor vestibulum. Nunc neque tincidunt, non dictumst tempus. Et id, duis sit arcu, felis porta donec. Proin tincidunt.
+
+Cum arcu pretium, sed sed. In nonummy, tempor molestie id, omnis tellus. A risus dolor, vitae et donec, mauris amet posuere. Donec in, nonummy dolor luctus. Laoreet ligula, pretium nisl eleifend, malesuada tincidunt cursus. Congue velit iaculis.]]></content:encoded>
+		<excerpt:encoded><![CDATA[]]></excerpt:encoded>
+		<wp:post_id>28</wp:post_id>
+		<wp:post_date>2010-01-09 10:44:34</wp:post_date>
+		<wp:post_date_gmt>2010-01-09 10:44:34</wp:post_date_gmt>
+		<wp:comment_status>open</wp:comment_status>
+		<wp:ping_status>open</wp:ping_status>
+		<wp:post_name>full-width</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_parent>1279</wp:post_parent>
+		<wp:menu_order>0</wp:menu_order>
+		<wp:post_type>page</wp:post_type>
+		<wp:post_password></wp:post_password>
+		<wp:is_sticky>0</wp:is_sticky>
+		<wp:postmeta>
+			<wp:meta_key>_wp_page_template</wp:meta_key>
+			<wp:meta_value><![CDATA[template-fullwidth.php]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key>image</wp:meta_key>
+			<wp:meta_value><![CDATA[]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key>image2</wp:meta_key>
+			<wp:meta_value><![CDATA[]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key>caption</wp:meta_key>
+			<wp:meta_value><![CDATA[Default Caption]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key>post_select</wp:meta_key>
+			<wp:meta_value><![CDATA[one]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key>post_checkbox_true</wp:meta_key>
+			<wp:meta_value><![CDATA[true]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key>post_checkbox_false</wp:meta_key>
+			<wp:meta_value><![CDATA[false]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key>embed</wp:meta_key>
+			<wp:meta_value><![CDATA[This is the default text]]></wp:meta_value>
+		</wp:postmeta>
+	</item>

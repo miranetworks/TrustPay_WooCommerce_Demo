@@ -1,0 +1,29 @@
+*** PayFast Changelog ***
+
+2014.01.13 - version 1.2.6
+ * WC 2.1 Compatibility
+
+2013.09.06 - version 1.2.5
+ * Update PayFast Logo
+
+2013.08.29 - version 1.2.4
+ * Sequential Order Numbers support
+ * Better WooCommerce version tracking for PayFast
+
+2013.06.26 - version 1.2.3
+ * Track WooCommerce version
+
+2013.01.21 - version 1.2.2
+ * WC 2.0 Compat
+
+2012.12.05 - version 1.2.1
+ * Updater
+
+2012.10.23 - version 1.2
+ * Class names
+
+2012.06.18 - version 1.1
+ * Patched release with new class names and Woo updater
+
+2011.10.06 - version 1.0
+ * First Release
