@@ -12,8 +12,7 @@ Domain Path: /languages/
 */
 
 /*
- * http://localhost/woocommerce/?page_id=7&order-received=2316&key=wc_order_5370cefa03f15
- * 
+ *
  * https://my.trustpay.biz/TrustPayWebClient/Transact?vendor_id=ap.a097b5e4-f985-4054-a2c8-75db128b7a6a&appuser=Test+Test&currency=ZAR
  * &amount=3.00&txid=2336
  * &fail=http%3A%2F%2Flocalhost%2Fwoocommerce%2F%3Fpage_id%3D7%26order-pay%3D2336%26pay_for_order%3Dtrue%26key%3Dwc_order_537350ed10f77
@@ -293,10 +292,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                 
                 //prepare the fail/cancel order fallback url
                 if (empty($this->settings['failurepostbackurl'])){
-                    //$failUrl = $order->get_cancel_order_url();
-                    $failUrl = $order->get_checkout_payment_url( $on_checkout = false );
+                    $cancelUrl = $order->get_cancel_order_url();
                 }else{
-                    $failUrl = $this->settings['failurepostbackurl'];
+                    $cancelUrl = $this->settings['failurepostbackurl'];
                 }
                 
                 $this->data_to_send = array(
@@ -306,9 +304,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     'currency'  => get_option( 'woocommerce_currency' ),
                     'amount'    => $order->order_total,
                     'txid'      => (string)$order->id,
-                    'fail'      => $failUrl,
+                    'fail'      => $cancelUrl,
                     'success'   => $successUrl,
-                    'cancel'    => $order->get_cancel_order_url(),
                     'message'   => sprintf( __( 'New order from %s', 'wctrustpay' ), get_bloginfo( 'name' ) ),
                     'istest'    => $this->settings['istest']
 	   	);
