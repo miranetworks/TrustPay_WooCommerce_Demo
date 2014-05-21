@@ -11,17 +11,6 @@ Text Domain: wctrustpay
 Domain Path: /languages/ 
 */
 
-/*
- *
- * https://my.trustpay.biz/TrustPayWebClient/Transact?vendor_id=ap.a097b5e4-f985-4054-a2c8-75db128b7a6a&appuser=Test+Test&currency=ZAR
- * &amount=3.00&txid=2336
- * &fail=http%3A%2F%2Flocalhost%2Fwoocommerce%2F%3Fpage_id%3D7%26order-pay%3D2336%26pay_for_order%3Dtrue%26key%3Dwc_order_537350ed10f77
- * &success=http%3A%2F%2Flocalhost%2Fwoocommerce%2F%3Fpage_id%3D7%26order-received%3D2336%26key%3Dwc_order_537350ed10f77
- * &cancel=http%3A%2F%2Flocalhost%2Fwoocommerce%2F%3Fpage_id%3D6%26cancel_order%3Dtrue%26order%3Dwc_order_537350ed10f77%26order_id%3D2336%26redirect%26_wpnonce%3D288f739079
- * &message=New+order+from+Demo+Online+Store-WooCommerce&istest=yes
- */
-
-
 /**
 * Check if WooCommerce is active
 **/
@@ -209,16 +198,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                           'placeholder' => __('Leave blank for default woocommerce fail url'),
                           'desc_tip' => true
                       ),
-                      /*
-                      'pendingpostbackurl' => array(
-                          'title' => __('Transaction Pending Postback URL', 'wctrustpay'),
-                          'type' => 'text',
-                          'description' => __('For CarrierBilling transactions, please enter the pending holder URL', 'wctrustpay'),
-                          'default' => __( $this->defaultpendingUrl ),
-                          'placeholder' => __('Leave blank for default woocommerce pending url'),
-                          'desc_tip' => true
-                      ),*/
-		      'testing' => array(
+                      'testing' => array(
 			  'title' => __( 'Gateway Testing', 'wctrustpay' ),
 			  'type' => 'title',
 			  'description' => '',
