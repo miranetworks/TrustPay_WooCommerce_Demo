@@ -1423,10 +1423,6 @@ class WC_Order {
 			do_action( 'woocommerce_payment_complete', $this->id );
 
 		} else {
-                        echo "<pre>";
-                        echo "<br> Status:";
-                        var_dump($this->status);
-                        echo "</pre>";
 			do_action( 'woocommerce_payment_complete_order_status_' . $this->status, $this->id );
 
 		}
