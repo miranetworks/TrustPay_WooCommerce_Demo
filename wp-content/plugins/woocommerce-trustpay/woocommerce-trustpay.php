@@ -8,6 +8,7 @@ Version: 1.0
 Author URI: http://www.trsutpay.biz
 License: GPLv2 or later
 Text Domain: wctrustpay
+Dependency (Plugin): oauth-provider (https://wordpress.org/plugins/oauth2-provider/)
 Domain Path: /languages/ 
 */
 
