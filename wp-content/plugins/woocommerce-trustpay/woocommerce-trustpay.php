@@ -50,7 +50,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 	  */
 	  
 	  function wctrustpay_add_gateway( $methods ) {
-	      $methods[] = 'WC_Trustpay_Gateway';
+	      $methods[] = 'WC_Gateway_Trustpay';
 	      return $methods;
 	  }
           add_filter( 'woocommerce_payment_gateways', 'wctrustpay_add_gateway' );
@@ -61,7 +61,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 	  *
 	  * Built the Trustpay method.
 	  */
-	  class WC_Trustpay_Gateway extends WC_Payment_Gateway {
+	  class WC_Gateway_Trustpay extends WC_Payment_Gateway {
 	      /**
 	      * Gateway's Constructor.
 	      *
@@ -76,7 +76,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 		  $this->defaultsuccessUrl   = str_replace('https:', 'http:', add_query_arg('wc-trustpay', 'trustpay_success_result', home_url('/')));
                   $this->defaultfailureUrl   = str_replace('https:', 'http:', add_query_arg('wc-trustpay', 'trustpay_failure_result', home_url('/')));
 		  $this->method_title        = __( 'Trustpay', 'wctrustpay' );
-                  $this->response_url        = add_query_arg( 'wc-api', 'WC_Trustpay_Gateway', home_url( '/' ) );
+                  $this->response_url        = add_query_arg( 'wc-api', 'WC_Gateway_Trustpay', home_url( '/' ) );
                   
 		  // Load the form fields.
 		  $this->init_form_fields();
@@ -95,9 +95,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 		  
                   
                   // Actions.
-		  add_action( 'woocommerce_api_wc_trustpay_gateway', array( &$this, 'check_ipn_response' ) );
-		  //add_action( 'valid_trustpay_ipn_request', array( &$this, 'successful_request' ) );
-		  add_action( 'woocommerce_receipt_trustpay', array( &$this, 'receipt_page' ) );
+		  add_action( 'woocommerce_api_wc_gateway_trustpay', array( $this, 'check_tpn_response' ) );
+		  add_action( 'valid_trustpay_tpn_request', array( $this, 'successful_request' ) );
+		  add_action( 'woocommerce_receipt_trustpay', array( $this, 'receipt_page' ) );
 		  
 		  if ( version_compare( WOOCOMMERCE_VERSION, '2.0.0', '>=' ) ) {
 		      add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( &$this, 'process_admin_options' ) );
@@ -179,9 +179,21 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 		      'app_key' => array(
 			  'title' => __( 'Vendor Key', 'wctrustpay' ),
 			  'type' => 'text',
-			  'description' => __( 'Please enter your Trustpay Vendor Key.', 'wctrustpay' ) . ' ' . sprintf( __( 'You can to get this information in: %sTrustPay Account%s.', 'wctrustpay' ), '<a href="https://my.trustpay.biz" target="_blank">', '</a>' ),
+			  'description' => __( 'Please enter your Trustpay Vendor Key.', 'wctrustpay' ) . ' ' . sprintf( __( 'You can to get this information from your %sTrustPay Account%s.', 'wctrustpay' ), '<a href="https://my.trustpay.biz" target="_blank">', '</a>' ),
 			  'default' => ''
 		      ),
+                      'notificationurl' => array(
+                          'title' => __('Notification URL', 'wctrustpay'),
+                          'type' => 'text',
+                          'description' => __('Please enter the Notification URL.', 'wctrustpay'). ' ' . sprintf( __( 'You can to get this information from your  %sTrustPay Account%s.', 'wctrustpay' ), '<a href="https://my.trustpay.biz" target="_blank">', '</a>' ),
+                          'default' => ''
+                      ),
+                      'sharedsecret' => array(
+                          'title' => __('Shared Secret', 'wctrustpay'),
+                          'type' => 'text',
+                          'description' => __('Please enter the Shared Secret.', 'wctrustpay'). ' ' . sprintf( __( 'You can to get this information from your %sTrustPay Account%s.', 'wctrustpay' ), '<a href="https://my.trustpay.biz" target="_blank">', '</a>' ),
+                          'default' => ''
+                      ),
                       'successpostbackurl' => array(
                           'title' => __('Success Postback URL', 'wctrustpay'),
                           'type' => 'text',
@@ -252,23 +264,23 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 	      * @return string Error Mensage.
 	      */
 	      public function vendor_key_missing_message() {
-		  $html = '<div class="error">';
-		      $html .= '<p>' . sprintf( __( '<strong>Gateway Disabled</strong> You should inform your Vendor Key in Trustpay. %sClick here to configure!%s', 'wctrustpay' ), '<a href="' . get_admin_url() . 'admin.php?page=woocommerce_settings&amp;tab=payment_gateways">', '</a>' ) . '</p>';
-		  $html .= '</div>';
+                $html = '<div class="error">';
+                $html .= '<p>' . sprintf( __( '<strong>Gateway Disabled</strong> You should inform your Vendor Key in Trustpay. %sClick here to configure!%s', 'wctrustpay' ), '<a href="' . get_admin_url() . 'admin.php?page=woocommerce_settings&amp;tab=payment_gateways">', '</a>' ) . '</p>';
+                $html .= '</div>';
 
-		  echo $html;
+                echo $html;
 	      }
                             
               public function generate_truspay_form( $order_id ) {
                 global $woocommerce;
-		$order = new WC_Order( $order_id );
+                $order = new WC_Order( $order_id );
 		
                 //prepare the success order fallback url
                 if (empty($this->settings['successpostbackurl'])){
                     $successUrl = $this->get_return_url( $order );
                 }else{
                     $successUrl = $this->settings['successpostbackurl'];
-                }
+}
                 
                 //prepare the fail/cancel order fallback url
                 if (empty($this->settings['failurepostbackurl'])){
@@ -320,7 +332,168 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                             </script>
                     </form>';
                 }
-	  }
-      }    
+                /**
+                 * check if the TrustPay TPN is valid
+                 *  @param array $data
+                 */
+                function check_tpn_request_is_valid($data){
+                    global $woocommerce;
+                    
+                    if (empty($data['tp_transaction_id'])){
+                        $this->log->add( 'trustpay', 'TPN Request is empty.');
+                        return FALSE;
+                    }
+                    $params = array( 
+                        'amount'=> $data['amount'],
+                        'application_id'=> $data['application_id'],
+                        'consumermessage'=> $data['consumermessage'],
+                        'currency'=> $data['currency'],
+                        'description' => $data['description'],
+                        'method' => $data['method'],
+                        'status' => $data['status'],
+                        'tp_transaction_id' => $data['tp_transaction_id'],
+                        'transaction_id' => $data['transaction_id'],
+                        'transaction_time' => $data['transaction_time'],
+                        'user_id' => $data['user_id'],
+                        'oauth_consumer_key' => $data['oauth_consumer_key'],
+                        'oauth_nonce' => $data['oauth_nonce'],
+                        'oauth_signature_method' => $data['oauth_signature_method'],
+                        'oauth_timestamp' => $data['oauth_timestamp'],
+                        'oauth_version' => $data['oauth_version']
+                        );
+             
+                    //validate by calculating the signiture and matching it
+                    $original_signature = $data['oauth_signature'];
+
+                    // If the payment method specifies full IPN logging, do it now.
+                    if (empty($this->settings['sharedsecret']) ||
+                        empty($this->settings['notificationurl'])) {
+                        $this->log->add( 'trustpay', 'Notification URL and Secret Key Configuration not found'.print_r( $data, true ));
+                        return FALSE;
+                    }else{
+                       $shared_secret = $this->settings['sharedsecret'];
+                       $notificationurl = $this->settings['notificationurl'];
+                    }
+                    
+                    $consumer = new OP_OAuthConsumer($data['oauth_consumer_key'], $shared_secret, $notificationurl); 
+                    $request = new OP_OAuthRequest("GET", $notificationurl, $params);
+                    
+                    $oauth_signature = urldecode($request->build_signature(new OP_OAuthSignatureMethod_HMAC_SHA1(), $consumer, NULL));
+                    
+                    echo '<pre>';
+                    var_dump($oauth_signature);
+                    var_dump($original_signature);
+                    echo '</pre>';
+                    
+                    if ($original_signature === $oauth_signature){
+                        return TRUE;
+                    }else{
+                        return FALSE;
+                    }
+                }
+                
+                /**
+                * Check TrustPay TPN response.
+                *
+                */
+                function check_tpn_response() {
+                    @ob_clean();
+                    $tpn_response = ! empty( $_GET ) ? $_GET : false;
+                    if ( $tpn_response && $this->check_tpn_request_is_valid( $tpn_response ) ) {
+                        header( 'HTTP/1.1 200 OK' );
+                        do_action( "valid_trustpay_tpn_request", $tpn_response );
+                    } else {
+                        wp_die( "TrustPay TPN Request Failure", "TrustPay TPN", array( 'response' => 200 ) );
+                    }
+                } // End check_tpn_response()
+                
+                /**
+                * Successful Payment!
+                *
+                * @access public
+                * @param array $posted
+                * @return void
+                */
+                function successful_request( $posted ) {
+                    $posted = stripslashes_deep( $posted );
+
+                    if ( ! empty( $posted['transaction_id'] )) {
+                        $order = $this->get_trustpay_order( $posted['transaction_id']);
+
+                        if ( 'yes' == $this->debug ) {
+                            $this->log->add( 'trustpay', 'Found order #' . $order->id );
+                        }
+                        // Lowercase returned variables
+                        $posted['status'] = strtolower( $posted['status'] );
+
+                        if ( 'yes' == $this->debug ) {
+                            $this->log->add( 'trustpay', 'Payment status: ' . $posted['status'] );
+                        }
+                        
+                        switch ( $posted['status'] ) {
+                            case 'success':
+                                // Check order not already completed
+                                if ( $order->status == 'completed' ) {
+                                    if ( 'yes' == $this->debug ) {
+                                       $this->log->add( 'trustpay', 'Aborting, Order #' . $order->id . ' is already complete.' );
+                                    }
+                                    exit;
+                                }
+
+                                // Validate currency
+                                if ( $order->get_order_currency() != $posted['currency'] ) {
+                                    if ( 'yes' == $this->debug ) {
+                                        $this->log->add( 'trustpay', 'Payment error: Currencies do not match (sent "' . $order->get_order_currency() . '" | returned "' . $posted['currency'] . '")' );
+                                    }
+                                    // Put this order on-hold for manual checking
+                                    $order->update_status( 'on-hold', sprintf( __( 'Validation error: TrustPay currencies do not match (code %s).', 'woocommerce' ), $posted['currency'] ) );
+                                    exit;
+                                }
+
+                                // Validate amount
+                                if ( $order->get_total() != $posted['amount'] ) {
+                                    if ( 'yes' == $this->debug ) {
+                                        $this->log->add( 'trustpay', 'Payment error: Amounts do not match (gross ' . $posted['amount'] . ')' );
+                                    }
+                                    // Put this order on-hold for manual checking
+                                    $order->update_status( 'on-hold', sprintf( __( 'Validation error: TrustPay amounts do not match (gross %s).', 'woocommerce' ), $posted['amount'] ) );
+                                    exit;
+                                }
+                                
+                                if ( $posted['status'] == 'success' ) {
+                                    $order->add_order_note( __( 'TPN payment completed', 'woocommerce' ) );
+                                    $order->payment_complete();
+                                }
+                                if ( 'yes' == $this->debug ) {
+                                    $this->log->add( 'paypal', 'Payment complete.' );
+                                }
+                            break;
+                            case 'denied' :
+                            case 'expired' :
+                            case 'failed' :
+                            case 'voided' :
+                                // Order failed
+                                $order->update_status( 'failed', sprintf( __( 'Payment %s via TrustPay TPN.', 'woocommerce' ), strtolower( $posted['status'] ) ) );
+                            break;
+                            default :
+                                // No action
+                            break;
+                        }
+                        exit;
+                    }
+                }
+            
+                /**
+                 * Get the trustpay order processed by transaction_id
+                 * 
+                 * @param type $transaction_id
+                 * @return \WC_Order
+                 */
+                private function get_trustpay_order( $transaction_id) {
+                    $order = new WC_Order( $transaction_id );
+                    return $order;
+                }   
+            }
+        }    
 }
 ?>

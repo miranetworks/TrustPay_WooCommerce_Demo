@@ -261,30 +261,30 @@ class WC_Gateway_PayFast extends WC_Payment_Gateway {
 		$shipping_name = explode(' ', $order->shipping_method);
 
 		// Construct variables for post
-	    $this->data_to_send = array(
-	        // Merchant details
-	        'merchant_id' => $this->settings['merchant_id'],
-	        'merchant_key' => $this->settings['merchant_key'],
-	        'return_url' => $this->get_return_url( $order ),
-	        'cancel_url' => $order->get_cancel_order_url(),
-	        'notify_url' => $this->response_url,
+                $this->data_to_send = array(
+                    // Merchant details
+                    'merchant_id' => $this->settings['merchant_id'],
+                    'merchant_key' => $this->settings['merchant_key'],
+                    'return_url' => $this->get_return_url( $order ),
+                    'cancel_url' => $order->get_cancel_order_url(),
+                    'notify_url' => $this->response_url,
 
-			// Billing details
-			'name_first' => $order->billing_first_name,
-			'name_last' => $order->billing_last_name,
-			// 'email_address' => $order->billing_email,
+                    // Billing details
+                    'name_first' => $order->billing_first_name,
+                    'name_last' => $order->billing_last_name,
+                    // 'email_address' => $order->billing_email,
 
-	        // Item details
-	        'm_payment_id' => ltrim( $order->get_order_number(), __( '#', 'hash before order number', 'woothemes' ) ),
-	        'amount' => $order->order_total,
-	    	'item_name' => get_bloginfo( 'name' ) .' purchase, Order ' . $order->get_order_number(),
-	    	'item_description' => sprintf( __( 'New order from %s', 'woothemes' ), get_bloginfo( 'name' ) ),
+                    // Item details
+                    'm_payment_id' => ltrim( $order->get_order_number(), __( '#', 'hash before order number', 'woothemes' ) ),
+                    'amount' => $order->order_total,
+                    'item_name' => get_bloginfo( 'name' ) .' purchase, Order ' . $order->get_order_number(),
+                    'item_description' => sprintf( __( 'New order from %s', 'woothemes' ), get_bloginfo( 'name' ) ),
 
-	    	// Custom strings
-	    	'custom_str1' => $order->order_key,
-	    	'custom_str2' => 'WooCommerce/' . $woocommerce->version . '; ' . get_site_url(),
-	    	'custom_str3' => $order->id,
-	    	'source' => 'WooCommerce-Free-Plugin'
+                    // Custom strings
+                    'custom_str1' => $order->order_key,
+                    'custom_str2' => 'WooCommerce/' . $woocommerce->version . '; ' . get_site_url(),
+                    'custom_str3' => $order->id,
+                    'source' => 'WooCommerce-Free-Plugin'
 	   	);
 
 	   	// Override merchant_id and merchant_key if the gateway is in test mode.
@@ -375,9 +375,9 @@ class WC_Gateway_PayFast extends WC_Payment_Gateway {
 		}
 
 		$sessionid = $data['custom_str1'];
-        $transaction_id = $data['pf_payment_id'];
-        $vendor_name = get_option( 'blogname' );
-        $vendor_url = home_url( '/' );
+                $transaction_id = $data['pf_payment_id'];
+                $vendor_name = get_option( 'blogname' );
+                $vendor_url = home_url( '/' );
 
 		$order_id = (int) $data['custom_str3'];
 		$order_key = esc_attr( $sessionid );
@@ -387,495 +387,495 @@ class WC_Gateway_PayFast extends WC_Payment_Gateway {
 		$data_array = array();
 
 		// Dump the submitted variables and calculate security signature
-	    foreach( $data as $key => $val ) {
-	    	if( $key != 'signature' ) {
-	    		$data_string .= $key .'='. urlencode( $val ) .'&';
-	    		$data_array[$key] = $val;
-	    	}
-	    }
+                foreach( $data as $key => $val ) {
+                    if( $key != 'signature' ) {
+                            $data_string .= $key .'='. urlencode( $val ) .'&';
+                            $data_array[$key] = $val;
+                    }
+                }
 
-	    // Remove the last '&' from the parameter string
-	    $data_string = substr( $data_string, 0, -1 );
-	    $signature = md5( $data_string );
+                // Remove the last '&' from the parameter string
+                $data_string = substr( $data_string, 0, -1 );
+                $signature = md5( $data_string );
 
 		$this->log( "\n" . '----------' . "\n" . 'PayFast ITN call received' );
 
 		// Notify PayFast that information has been received
-        if( ! $pfError && ! $pfDone ) {
-            header( 'HTTP/1.0 200 OK' );
-            flush();
-        }
+                if( ! $pfError && ! $pfDone ) {
+                    header( 'HTTP/1.0 200 OK' );
+                    flush();
+                }
 
-        // Get data sent by PayFast
-        if ( ! $pfError && ! $pfDone ) {
-        	$this->log( 'Get posted data' );
+                // Get data sent by PayFast
+                if ( ! $pfError && ! $pfDone ) {
+                        $this->log( 'Get posted data' );
 
-            $this->log( 'PayFast Data: '. print_r( $data, true ) );
+                    $this->log( 'PayFast Data: '. print_r( $data, true ) );
 
-            if ( $data === false ) {
-                $pfError = true;
-                $pfErrMsg = PF_ERR_BAD_ACCESS;
-            }
-        }
+                    if ( $data === false ) {
+                        $pfError = true;
+                        $pfErrMsg = PF_ERR_BAD_ACCESS;
+                    }
+                }
 
-        // Verify security signature
-        if( ! $pfError && ! $pfDone ) {
-            $this->log( 'Verify security signature' );
+                // Verify security signature
+                if( ! $pfError && ! $pfDone ) {
+                    $this->log( 'Verify security signature' );
 
-            // If signature different, log for debugging
-            if( ! $this->validate_signature( $data, $signature ) ) {
-                $pfError = true;
-                $pfErrMsg = PF_ERR_INVALID_SIGNATURE;
-            }
-        }
+                    // If signature different, log for debugging
+                    if( ! $this->validate_signature( $data, $signature ) ) {
+                        $pfError = true;
+                        $pfErrMsg = PF_ERR_INVALID_SIGNATURE;
+                    }
+                }
 
-        // Verify source IP (If not in debug mode)
-        if( ! $pfError && ! $pfDone && $this->settings['testmode'] != 'yes' ) {
-            $this->log( 'Verify source IP' );
+                // Verify source IP (If not in debug mode)
+                if( ! $pfError && ! $pfDone && $this->settings['testmode'] != 'yes' ) {
+                    $this->log( 'Verify source IP' );
 
-            if( ! $this->validate_ip( $_SERVER['REMOTE_ADDR'] ) ) {
-                $pfError = true;
-                $pfErrMsg = PF_ERR_BAD_SOURCE_IP;
-            }
-        }
+                    if( ! $this->validate_ip( $_SERVER['REMOTE_ADDR'] ) ) {
+                        $pfError = true;
+                        $pfErrMsg = PF_ERR_BAD_SOURCE_IP;
+                    }
+                }
 
-        // Get internal order and verify it hasn't already been processed
-        if( ! $pfError && ! $pfDone ) {
+                // Get internal order and verify it hasn't already been processed
+                if( ! $pfError && ! $pfDone ) {
 
-            $this->log( "Purchase:\n". print_r( $order, true )  );
+                    $this->log( "Purchase:\n". print_r( $order, true )  );
 
-            // Check if order has already been processed
-            if( $order->status == 'completed' ) {
-                $this->log( 'Order has already been processed' );
-                $pfDone = true;
-            }
-        }
+                    // Check if order has already been processed
+                    if( $order->status == 'completed' ) {
+                        $this->log( 'Order has already been processed' );
+                        $pfDone = true;
+                    }
+                }
 
-        // Verify data received
-        if( ! $pfError ) {
-            $this->log( 'Verify data received' );
+                // Verify data received
+                if( ! $pfError ) {
+                    $this->log( 'Verify data received' );
 
-            $pfValid = $this->validate_response_data( $data_array );
+                    $pfValid = $this->validate_response_data( $data_array );
 
-            if( ! $pfValid ) {
-                $pfError = true;
-                $pfErrMsg = PF_ERR_BAD_ACCESS;
-            }
-        }
+                    if( ! $pfValid ) {
+                        $pfError = true;
+                        $pfErrMsg = PF_ERR_BAD_ACCESS;
+                    }
+                }
 
-        // Check data against internal order
-        if( ! $pfError && ! $pfDone ) {
-            $this->log( 'Check data against internal order' );
+                // Check data against internal order
+                if( ! $pfError && ! $pfDone ) {
+                    $this->log( 'Check data against internal order' );
 
-            // Check order amount
-            if( ! $this->amounts_equal( $data['amount_gross'], $order->order_total ) ) {
-                $pfError = true;
-                $pfErrMsg = PF_ERR_AMOUNT_MISMATCH;
-            }
-            // Check session ID
-            elseif( strcasecmp( $data['custom_str1'], $order->order_key ) != 0 )
-            {
-                $pfError = true;
-                $pfErrMsg = PF_ERR_SESSIONID_MISMATCH;
-            }
-        }
+                    // Check order amount
+                    if( ! $this->amounts_equal( $data['amount_gross'], $order->order_total ) ) {
+                        $pfError = true;
+                        $pfErrMsg = PF_ERR_AMOUNT_MISMATCH;
+                    }
+                    // Check session ID
+                    elseif( strcasecmp( $data['custom_str1'], $order->order_key ) != 0 )
+                    {
+                        $pfError = true;
+                        $pfErrMsg = PF_ERR_SESSIONID_MISMATCH;
+                    }
+                }
 
-        // Check status and update order
-        if( ! $pfError && ! $pfDone ) {
-            $this->log( 'Check status and update order' );
+                // Check status and update order
+                if( ! $pfError && ! $pfDone ) {
+                    $this->log( 'Check status and update order' );
 
-		if ( $order->order_key !== $order_key ) { exit; }
+                        if ( $order->order_key !== $order_key ) { exit; }
 
-    		switch( $data['payment_status'] ) {
-                case 'COMPLETE':
-                    $this->log( '- Complete' );
+                        switch( $data['payment_status'] ) {
+                        case 'COMPLETE':
+                            $this->log( '- Complete' );
 
-                   // Payment completed
-					$order->add_order_note( __( 'ITN payment completed', 'woothemes' ) );
-					$order->payment_complete();
+                           // Payment completed
+                                                $order->add_order_note( __( 'ITN payment completed', 'woothemes' ) );
+                                                $order->payment_complete();
+
+                            if( $this->settings['testmode'] == 'yes' && $this->settings['send_debug_email'] == 'yes' ) {
+                                $subject = "PayFast ITN on your site";
+                                $body =
+                                    "Hi,\n\n".
+                                    "A PayFast transaction has been completed on your website\n".
+                                    "------------------------------------------------------------\n".
+                                    "Site: ". $vendor_name ." (". $vendor_url .")\n".
+                                    "Purchase ID: ". $data['m_payment_id'] ."\n".
+                                    "PayFast Transaction ID: ". $data['pf_payment_id'] ."\n".
+                                    "PayFast Payment Status: ". $data['payment_status'] ."\n".
+                                    "Order Status Code: ". $order->status;
+                                wp_mail( $pfDebugEmail, $subject, $body );
+                            }
+                            break;
+
+                                case 'FAILED':
+                            $this->log( '- Failed' );
+
+                            $order->update_status( 'failed', sprintf(__('Payment %s via ITN.', 'woothemes' ), strtolower( sanitize( $data['payment_status'] ) ) ) );
+
+                                                if( $this->settings['testmode'] == 'yes' && $this->settings['send_debug_email'] == 'yes' ) {
+                                    $subject = "PayFast ITN Transaction on your site";
+                                    $body =
+                                        "Hi,\n\n".
+                                        "A failed PayFast transaction on your website requires attention\n".
+                                        "------------------------------------------------------------\n".
+                                        "Site: ". $vendor_name ." (". $vendor_url .")\n".
+                                        "Purchase ID: ". $order->id ."\n".
+                                        "User ID: ". $order->user_id ."\n".
+                                        "PayFast Transaction ID: ". $data['pf_payment_id'] ."\n".
+                                        "PayFast Payment Status: ". $data['payment_status'];
+                                    wp_mail( $pfDebugEmail, $subject, $body );
+                            }
+                                        break;
+
+                                case 'PENDING':
+                            $this->log( '- Pending' );
+
+                            // Need to wait for "Completed" before processing
+                                        $order->update_status( 'pending', sprintf(__('Payment %s via ITN.', 'woothemes' ), strtolower( sanitize( $data['payment_status'] ) ) ) );
+                                        break;
+
+                                default:
+                            // If unknown status, do nothing (safest course of action)
+                                break;
+                    }
+                }
+
+                // If an error occurred
+                if( $pfError ) {
+                    $this->log( 'Error occurred: '. $pfErrMsg );
 
                     if( $this->settings['testmode'] == 'yes' && $this->settings['send_debug_email'] == 'yes' ) {
-                        $subject = "PayFast ITN on your site";
-                        $body =
-                            "Hi,\n\n".
-                            "A PayFast transaction has been completed on your website\n".
-                            "------------------------------------------------------------\n".
-                            "Site: ". $vendor_name ." (". $vendor_url .")\n".
-                            "Purchase ID: ". $data['m_payment_id'] ."\n".
-                            "PayFast Transaction ID: ". $data['pf_payment_id'] ."\n".
-                            "PayFast Payment Status: ". $data['payment_status'] ."\n".
-                            "Order Status Code: ". $order->status;
-                        wp_mail( $pfDebugEmail, $subject, $body );
+                            $this->log( 'Sending email notification' );
+
+                             // Send an email
+                            $subject = "PayFast ITN error: ". $pfErrMsg;
+                            $body =
+                                "Hi,\n\n".
+                                "An invalid PayFast transaction on your website requires attention\n".
+                                "------------------------------------------------------------\n".
+                                "Site: ". $vendor_name ." (". $vendor_url .")\n".
+                                "Remote IP Address: ".$_SERVER['REMOTE_ADDR']."\n".
+                                "Remote host name: ". gethostbyaddr( $_SERVER['REMOTE_ADDR'] ) ."\n".
+                                "Purchase ID: ". $order->id ."\n".
+                                "User ID: ". $order->user_id ."\n";
+                            if( isset( $data['pf_payment_id'] ) )
+                                $body .= "PayFast Transaction ID: ". $data['pf_payment_id'] ."\n";
+                            if( isset( $data['payment_status'] ) )
+                                $body .= "PayFast Payment Status: ". $data['payment_status'] ."\n";
+                            $body .=
+                                "\nError: ". $pfErrMsg ."\n";
+
+                            switch( $pfErrMsg ) {
+                                case PF_ERR_AMOUNT_MISMATCH:
+                                    $body .=
+                                        "Value received : ". $data['amount_gross'] ."\n".
+                                        "Value should be: ". $order->order_total;
+                                    break;
+
+                                case PF_ERR_ORDER_ID_MISMATCH:
+                                    $body .=
+                                        "Value received : ". $data['custom_str3'] ."\n".
+                                        "Value should be: ". $order->id;
+                                    break;
+
+                                case PF_ERR_SESSION_ID_MISMATCH:
+                                    $body .=
+                                        "Value received : ". $data['custom_str1'] ."\n".
+                                        "Value should be: ". $order->id;
+                                    break;
+
+                                // For all other errors there is no need to add additional information
+                                default:
+                                    break;
+                            }
+
+                            wp_mail( $pfDebugEmail, $subject, $body );
                     }
-                    break;
+                }
 
-    			case 'FAILED':
-                    $this->log( '- Failed' );
+                // Close log
+                $this->log( '', true );
 
-                    $order->update_status( 'failed', sprintf(__('Payment %s via ITN.', 'woothemes' ), strtolower( sanitize( $data['payment_status'] ) ) ) );
+                return $pfError;
+            } // End check_itn_request_is_valid()
 
-					if( $this->settings['testmode'] == 'yes' && $this->settings['send_debug_email'] == 'yes' ) {
-	                    $subject = "PayFast ITN Transaction on your site";
-	                    $body =
-	                        "Hi,\n\n".
-	                        "A failed PayFast transaction on your website requires attention\n".
-	                        "------------------------------------------------------------\n".
-	                        "Site: ". $vendor_name ." (". $vendor_url .")\n".
-	                        "Purchase ID: ". $order->id ."\n".
-	                        "User ID: ". $order->user_id ."\n".
-	                        "PayFast Transaction ID: ". $data['pf_payment_id'] ."\n".
-	                        "PayFast Payment Status: ". $data['payment_status'];
-	                    wp_mail( $pfDebugEmail, $subject, $body );
+            /**
+             * Check PayFast ITN response.
+             *
+             * @since 1.0.0
+             */
+            function check_itn_response() {
+                    $_POST = stripslashes_deep( $_POST );
+
+                    if ( $this->check_itn_request_is_valid( $_POST ) ) {
+                            do_action( 'valid-payfast-standard-itn-request', $_POST );
                     }
-        			break;
+            } // End check_itn_response()
 
-    			case 'PENDING':
-                    $this->log( '- Pending' );
+            /**
+             * Successful Payment!
+             *
+             * @since 1.0.0
+             */
+            function successful_request( $posted ) {
+                    if ( ! isset( $posted['custom_str3'] ) && ! is_numeric( $posted['custom_str3'] ) ) { return false; }
 
-                    // Need to wait for "Completed" before processing
-        			$order->update_status( 'pending', sprintf(__('Payment %s via ITN.', 'woothemes' ), strtolower( sanitize( $data['payment_status'] ) ) ) );
-        			break;
+                    $order_id = (int) $posted['custom_str3'];
+                    $order_key = esc_attr( $posted['custom_str1'] );
+                    $order = new WC_Order( $order_id );
 
-    			default:
-                    // If unknown status, do nothing (safest course of action)
-    			break;
-            }
-        }
+                    if ( $order->order_key !== $order_key ) { exit; }
 
-        // If an error occurred
-        if( $pfError ) {
-            $this->log( 'Error occurred: '. $pfErrMsg );
+                    if ( $order->status !== 'completed' ) {
+                            // We are here so lets check status and do actions
+                            switch ( strtolower( $posted['payment_status'] ) ) {
+                                    case 'completed' :
+                                            // Payment completed
+                                            $order->add_order_note( __( 'ITN payment completed', 'woothemes' ) );
+                                            $order->payment_complete();
+                                    break;
+                                    case 'denied' :
+                                    case 'expired' :
+                                    case 'failed' :
+                                    case 'voided' :
+                                            // Failed order
+                                            $order->update_status( 'failed', sprintf(__('Payment %s via ITN.', 'woothemes' ), strtolower( sanitize( $posted['payment_status'] ) ) ) );
+                                    break;
+                                    default:
+                                            // Hold order
+                                            $order->update_status( 'on-hold', sprintf(__('Payment %s via ITN.', 'woothemes' ), strtolower( sanitize( $posted['payment_status'] ) ) ) );
+                                    break;
+                            } // End SWITCH Statement
 
-            if( $this->settings['testmode'] == 'yes' && $this->settings['send_debug_email'] == 'yes' ) {
-	            $this->log( 'Sending email notification' );
+                            wp_redirect( $this->get_return_url( $order ) );
+                            exit;
+                    } // End IF Statement
 
-	             // Send an email
-	            $subject = "PayFast ITN error: ". $pfErrMsg;
-	            $body =
-	                "Hi,\n\n".
-	                "An invalid PayFast transaction on your website requires attention\n".
-	                "------------------------------------------------------------\n".
-	                "Site: ". $vendor_name ." (". $vendor_url .")\n".
-	                "Remote IP Address: ".$_SERVER['REMOTE_ADDR']."\n".
-	                "Remote host name: ". gethostbyaddr( $_SERVER['REMOTE_ADDR'] ) ."\n".
-	                "Purchase ID: ". $order->id ."\n".
-	                "User ID: ". $order->user_id ."\n";
-	            if( isset( $data['pf_payment_id'] ) )
-	                $body .= "PayFast Transaction ID: ". $data['pf_payment_id'] ."\n";
-	            if( isset( $data['payment_status'] ) )
-	                $body .= "PayFast Payment Status: ". $data['payment_status'] ."\n";
-	            $body .=
-	                "\nError: ". $pfErrMsg ."\n";
-
-	            switch( $pfErrMsg ) {
-	                case PF_ERR_AMOUNT_MISMATCH:
-	                    $body .=
-	                        "Value received : ". $data['amount_gross'] ."\n".
-	                        "Value should be: ". $order->order_total;
-	                    break;
-
-	                case PF_ERR_ORDER_ID_MISMATCH:
-	                    $body .=
-	                        "Value received : ". $data['custom_str3'] ."\n".
-	                        "Value should be: ". $order->id;
-	                    break;
-
-	                case PF_ERR_SESSION_ID_MISMATCH:
-	                    $body .=
-	                        "Value received : ". $data['custom_str1'] ."\n".
-	                        "Value should be: ". $order->id;
-	                    break;
-
-	                // For all other errors there is no need to add additional information
-	                default:
-	                    break;
-	            }
-
-	            wp_mail( $pfDebugEmail, $subject, $body );
-            }
-        }
-
-        // Close log
-        $this->log( '', true );
-
-    	return $pfError;
-    } // End check_itn_request_is_valid()
-
-	/**
-	 * Check PayFast ITN response.
-	 *
-	 * @since 1.0.0
-	 */
-	function check_itn_response() {
-		$_POST = stripslashes_deep( $_POST );
-
-		if ( $this->check_itn_request_is_valid( $_POST ) ) {
-			do_action( 'valid-payfast-standard-itn-request', $_POST );
-		}
-	} // End check_itn_response()
-
-	/**
-	 * Successful Payment!
-	 *
-	 * @since 1.0.0
-	 */
-	function successful_request( $posted ) {
-		if ( ! isset( $posted['custom_str3'] ) && ! is_numeric( $posted['custom_str3'] ) ) { return false; }
-
-		$order_id = (int) $posted['custom_str3'];
-		$order_key = esc_attr( $posted['custom_str1'] );
-		$order = new WC_Order( $order_id );
-
-		if ( $order->order_key !== $order_key ) { exit; }
-
-		if ( $order->status !== 'completed' ) {
-			// We are here so lets check status and do actions
-			switch ( strtolower( $posted['payment_status'] ) ) {
-				case 'completed' :
-					// Payment completed
-					$order->add_order_note( __( 'ITN payment completed', 'woothemes' ) );
-					$order->payment_complete();
-				break;
-				case 'denied' :
-				case 'expired' :
-				case 'failed' :
-				case 'voided' :
-					// Failed order
-					$order->update_status( 'failed', sprintf(__('Payment %s via ITN.', 'woothemes' ), strtolower( sanitize( $posted['payment_status'] ) ) ) );
-				break;
-				default:
-					// Hold order
-					$order->update_status( 'on-hold', sprintf(__('Payment %s via ITN.', 'woothemes' ), strtolower( sanitize( $posted['payment_status'] ) ) ) );
-				break;
-			} // End SWITCH Statement
-
-			wp_redirect( $this->get_return_url( $order ) );
-			exit;
-		} // End IF Statement
-
-		exit;
-	}
-
-	/**
-	 * Setup constants.
-	 *
-	 * Setup common values and messages used by the PayFast gateway.
-	 *
-	 * @since 1.0.0
-	 */
-	function setup_constants () {
-		global $woocommerce;
-		//// Create user agent string
-		// User agent constituents (for cURL)
-		define( 'PF_SOFTWARE_NAME', 'WooCommerce' );
-		define( 'PF_SOFTWARE_VER', $woocommerce->version );
-		define( 'PF_MODULE_NAME', 'WooCommerce-PayFast-Free' );
-		define( 'PF_MODULE_VER', $this->version );
-
-		// Features
-		// - PHP
-		$pfFeatures = 'PHP '. phpversion() .';';
-
-		// - cURL
-		if( in_array( 'curl', get_loaded_extensions() ) )
-		{
-		    define( 'PF_CURL', '' );
-		    $pfVersion = curl_version();
-		    $pfFeatures .= ' curl '. $pfVersion['version'] .';';
-		}
-		else
-		    $pfFeatures .= ' nocurl;';
-
-		// Create user agrent
-		define( 'PF_USER_AGENT', PF_SOFTWARE_NAME .'/'. PF_SOFTWARE_VER .' ('. trim( $pfFeatures ) .') '. PF_MODULE_NAME .'/'. PF_MODULE_VER );
-
-		// General Defines
-		define( 'PF_TIMEOUT', 15 );
-		define( 'PF_EPSILON', 0.01 );
-
-		// Messages
-		    // Error
-		define( 'PF_ERR_AMOUNT_MISMATCH', __( 'Amount mismatch', 'woothemes' ) );
-		define( 'PF_ERR_BAD_ACCESS', __( 'Bad access of page', 'woothemes' ) );
-		define( 'PF_ERR_BAD_SOURCE_IP', __( 'Bad source IP address', 'woothemes' ) );
-		define( 'PF_ERR_CONNECT_FAILED', __( 'Failed to connect to PayFast', 'woothemes' ) );
-		define( 'PF_ERR_INVALID_SIGNATURE', __( 'Security signature mismatch', 'woothemes' ) );
-		define( 'PF_ERR_MERCHANT_ID_MISMATCH', __( 'Merchant ID mismatch', 'woothemes' ) );
-		define( 'PF_ERR_NO_SESSION', __( 'No saved session found for ITN transaction', 'woothemes' ) );
-		define( 'PF_ERR_ORDER_ID_MISSING_URL', __( 'Order ID not present in URL', 'woothemes' ) );
-		define( 'PF_ERR_ORDER_ID_MISMATCH', __( 'Order ID mismatch', 'woothemes' ) );
-		define( 'PF_ERR_ORDER_INVALID', __( 'This order ID is invalid', 'woothemes' ) );
-		define( 'PF_ERR_ORDER_NUMBER_MISMATCH', __( 'Order Number mismatch', 'woothemes' ) );
-		define( 'PF_ERR_ORDER_PROCESSED', __( 'This order has already been processed', 'woothemes' ) );
-		define( 'PF_ERR_PDT_FAIL', __( 'PDT query failed', 'woothemes' ) );
-		define( 'PF_ERR_PDT_TOKEN_MISSING', __( 'PDT token not present in URL', 'woothemes' ) );
-		define( 'PF_ERR_SESSIONID_MISMATCH', __( 'Session ID mismatch', 'woothemes' ) );
-		define( 'PF_ERR_UNKNOWN', __( 'Unkown error occurred', 'woothemes' ) );
-
-		    // General
-		define( 'PF_MSG_OK', __( 'Payment was successful', 'woothemes' ) );
-		define( 'PF_MSG_FAILED', __( 'Payment has failed', 'woothemes' ) );
-		define( 'PF_MSG_PENDING',
-		    __( 'The payment is pending. Please note, you will receive another Instant', 'woothemes' ).
-		    __( ' Transaction Notification when the payment status changes to', 'woothemes' ).
-		    __( ' "Completed", or "Failed"', 'woothemes' ) );
-	} // End setup_constants()
-
-	/**
-	 * log()
-	 *
-	 * Log system processes.
-	 *
-	 * @since 1.0.0
-	 */
-
-	function log ( $message, $close = false ) {
-		if ( ( $this->settings['testmode'] != 'yes' && ! is_admin() ) ) { return; }
-
-		static $fh = 0;
-
-		if( $close ) {
-            @fclose( $fh );
-        } else {
-            // If file doesn't exist, create it
-            if( !$fh ) {
-                $pathinfo = pathinfo( __FILE__ );
-                $dir = str_replace( '/classes', '/logs', $pathinfo['dirname'] );
-                $fh = @fopen( $dir .'/payfast.log', 'w' );
+                    exit;
             }
 
-            // If file was successfully created
-            if( $fh ) {
-                $line = $message ."\n";
+            /**
+             * Setup constants.
+             *
+             * Setup common values and messages used by the PayFast gateway.
+             *
+             * @since 1.0.0
+             */
+            function setup_constants () {
+                    global $woocommerce;
+                    //// Create user agent string
+                    // User agent constituents (for cURL)
+                    define( 'PF_SOFTWARE_NAME', 'WooCommerce' );
+                    define( 'PF_SOFTWARE_VER', $woocommerce->version );
+                    define( 'PF_MODULE_NAME', 'WooCommerce-PayFast-Free' );
+                    define( 'PF_MODULE_VER', $this->version );
 
-                fwrite( $fh, $line );
+                    // Features
+                    // - PHP
+                    $pfFeatures = 'PHP '. phpversion() .';';
+
+                    // - cURL
+                    if( in_array( 'curl', get_loaded_extensions() ) )
+                    {
+                        define( 'PF_CURL', '' );
+                        $pfVersion = curl_version();
+                        $pfFeatures .= ' curl '. $pfVersion['version'] .';';
+                    }
+                    else
+                        $pfFeatures .= ' nocurl;';
+
+                    // Create user agrent
+                    define( 'PF_USER_AGENT', PF_SOFTWARE_NAME .'/'. PF_SOFTWARE_VER .' ('. trim( $pfFeatures ) .') '. PF_MODULE_NAME .'/'. PF_MODULE_VER );
+
+                    // General Defines
+                    define( 'PF_TIMEOUT', 15 );
+                    define( 'PF_EPSILON', 0.01 );
+
+                    // Messages
+                        // Error
+                    define( 'PF_ERR_AMOUNT_MISMATCH', __( 'Amount mismatch', 'woothemes' ) );
+                    define( 'PF_ERR_BAD_ACCESS', __( 'Bad access of page', 'woothemes' ) );
+                    define( 'PF_ERR_BAD_SOURCE_IP', __( 'Bad source IP address', 'woothemes' ) );
+                    define( 'PF_ERR_CONNECT_FAILED', __( 'Failed to connect to PayFast', 'woothemes' ) );
+                    define( 'PF_ERR_INVALID_SIGNATURE', __( 'Security signature mismatch', 'woothemes' ) );
+                    define( 'PF_ERR_MERCHANT_ID_MISMATCH', __( 'Merchant ID mismatch', 'woothemes' ) );
+                    define( 'PF_ERR_NO_SESSION', __( 'No saved session found for ITN transaction', 'woothemes' ) );
+                    define( 'PF_ERR_ORDER_ID_MISSING_URL', __( 'Order ID not present in URL', 'woothemes' ) );
+                    define( 'PF_ERR_ORDER_ID_MISMATCH', __( 'Order ID mismatch', 'woothemes' ) );
+                    define( 'PF_ERR_ORDER_INVALID', __( 'This order ID is invalid', 'woothemes' ) );
+                    define( 'PF_ERR_ORDER_NUMBER_MISMATCH', __( 'Order Number mismatch', 'woothemes' ) );
+                    define( 'PF_ERR_ORDER_PROCESSED', __( 'This order has already been processed', 'woothemes' ) );
+                    define( 'PF_ERR_PDT_FAIL', __( 'PDT query failed', 'woothemes' ) );
+                    define( 'PF_ERR_PDT_TOKEN_MISSING', __( 'PDT token not present in URL', 'woothemes' ) );
+                    define( 'PF_ERR_SESSIONID_MISMATCH', __( 'Session ID mismatch', 'woothemes' ) );
+                    define( 'PF_ERR_UNKNOWN', __( 'Unkown error occurred', 'woothemes' ) );
+
+                        // General
+                    define( 'PF_MSG_OK', __( 'Payment was successful', 'woothemes' ) );
+                    define( 'PF_MSG_FAILED', __( 'Payment has failed', 'woothemes' ) );
+                    define( 'PF_MSG_PENDING',
+                        __( 'The payment is pending. Please note, you will receive another Instant', 'woothemes' ).
+                        __( ' Transaction Notification when the payment status changes to', 'woothemes' ).
+                        __( ' "Completed", or "Failed"', 'woothemes' ) );
+            } // End setup_constants()
+
+            /**
+             * log()
+             *
+             * Log system processes.
+             *
+             * @since 1.0.0
+             */
+
+            function log ( $message, $close = false ) {
+                    if ( ( $this->settings['testmode'] != 'yes' && ! is_admin() ) ) { return; }
+
+                    static $fh = 0;
+
+                    if( $close ) {
+                @fclose( $fh );
+            } else {
+                // If file doesn't exist, create it
+                if( !$fh ) {
+                    $pathinfo = pathinfo( __FILE__ );
+                    $dir = str_replace( '/classes', '/logs', $pathinfo['dirname'] );
+                    $fh = @fopen( $dir .'/payfast.log', 'w' );
+                }
+
+                // If file was successfully created
+                if( $fh ) {
+                    $line = $message ."\n";
+
+                    fwrite( $fh, $line );
+                }
             }
-        }
-	} // End log()
+            } // End log()
 
-	/**
-	 * validate_signature()
-	 *
-	 * Validate the signature against the returned data.
-	 *
-	 * @param array $data
-	 * @param string $signature
-	 * @since 1.0.0
-	 */
+            /**
+             * validate_signature()
+             *
+             * Validate the signature against the returned data.
+             *
+             * @param array $data
+             * @param string $signature
+             * @since 1.0.0
+             */
 
-	function validate_signature ( $data, $signature ) {
+            function validate_signature ( $data, $signature ) {
 
-	    $result = ( $data['signature'] == $signature );
+                $result = ( $data['signature'] == $signature );
 
-	    $this->log( 'Signature = '. ( $result ? 'valid' : 'invalid' ) );
+                $this->log( 'Signature = '. ( $result ? 'valid' : 'invalid' ) );
 
-	    return( $result );
-	} // End validate_signature()
+                return( $result );
+            } // End validate_signature()
 
-	/**
-	 * validate_ip()
-	 *
-	 * Validate the IP address to make sure it's coming from PayFast.
-	 *
-	 * @param array $data
-	 * @since 1.0.0
-	 */
+            /**
+             * validate_ip()
+             *
+             * Validate the IP address to make sure it's coming from PayFast.
+             *
+             * @param array $data
+             * @since 1.0.0
+             */
 
-	function validate_ip( $sourceIP ) {
-	    // Variable initialization
-	    $validHosts = array(
-	        'www.payfast.co.za',
-	        'sandbox.payfast.co.za',
-	        'w1w.payfast.co.za',
-	        'w2w.payfast.co.za',
-	        );
+            function validate_ip( $sourceIP ) {
+                // Variable initialization
+                $validHosts = array(
+                    'www.payfast.co.za',
+                    'sandbox.payfast.co.za',
+                    'w1w.payfast.co.za',
+                    'w2w.payfast.co.za',
+                    );
 
-	    $validIps = array();
+                $validIps = array();
 
-	    foreach( $validHosts as $pfHostname ) {
-	        $ips = gethostbynamel( $pfHostname );
+                foreach( $validHosts as $pfHostname ) {
+                    $ips = gethostbynamel( $pfHostname );
 
-	        if( $ips !== false )
-	            $validIps = array_merge( $validIps, $ips );
-	    }
+                    if( $ips !== false )
+                        $validIps = array_merge( $validIps, $ips );
+                }
 
-	    // Remove duplicates
-	    $validIps = array_unique( $validIps );
+                // Remove duplicates
+                $validIps = array_unique( $validIps );
 
-	    $this->log( "Valid IPs:\n". print_r( $validIps, true ) );
+                $this->log( "Valid IPs:\n". print_r( $validIps, true ) );
 
-	    if( in_array( $sourceIP, $validIps ) ) {
-	        return( true );
-	    } else {
-	        return( false );
-	    }
-	} // End validate_ip()
+                if( in_array( $sourceIP, $validIps ) ) {
+                    return( true );
+                } else {
+                    return( false );
+                }
+            } // End validate_ip()
 
-	/**
-	 * validate_response_data()
-	 *
-	 * @param $pfHost String Hostname to use
-	 * @param $pfParamString String Parameter string to send
-	 * @param $proxy String Address of proxy to use or NULL if no proxy
-	 * @since 1.0.0
-	 */
-	function validate_response_data( $pfParamString, $pfProxy = null ) {
-		global $woocommerce;
-	    $this->log( 'Host = '. $this->validate_url );
-	    $this->log( 'Params = '. print_r( $pfParamString, true ) );
+            /**
+             * validate_response_data()
+             *
+             * @param $pfHost String Hostname to use
+             * @param $pfParamString String Parameter string to send
+             * @param $proxy String Address of proxy to use or NULL if no proxy
+             * @since 1.0.0
+             */
+            function validate_response_data( $pfParamString, $pfProxy = null ) {
+                    global $woocommerce;
+                $this->log( 'Host = '. $this->validate_url );
+                $this->log( 'Params = '. print_r( $pfParamString, true ) );
 
-		if ( ! is_array( $pfParamString ) ) { return false; }
+                    if ( ! is_array( $pfParamString ) ) { return false; }
 
-		$post_data = $pfParamString;
+                    $post_data = $pfParamString;
 
-		$url = $this->validate_url;
+                    $url = $this->validate_url;
 
-		$response = wp_remote_post( $url, array(
-       				'method' => 'POST',
-        			'body' => $post_data,
-        			'timeout' => 70,
-        			'sslverify' => true,
-        			'user-agent' => PF_USER_AGENT //'WooCommerce/' . $woocommerce->version . '; ' . get_site_url()
-    			));
+                    $response = wp_remote_post( $url, array(
+                                    'method' => 'POST',
+                                    'body' => $post_data,
+                                    'timeout' => 70,
+                                    'sslverify' => true,
+                                    'user-agent' => PF_USER_AGENT //'WooCommerce/' . $woocommerce->version . '; ' . get_site_url()
+                            ));
 
-		if ( is_wp_error( $response ) ) throw new Exception( __( 'There was a problem connecting to the payment gateway.', 'woothemes' ) );
+                    if ( is_wp_error( $response ) ) throw new Exception( __( 'There was a problem connecting to the payment gateway.', 'woothemes' ) );
 
-		if( empty( $response['body'] ) ) throw new Exception( __( 'Empty PayFast response.', 'woothemes' ) );
+                    if( empty( $response['body'] ) ) throw new Exception( __( 'Empty PayFast response.', 'woothemes' ) );
 
-		parse_str( $response['body'], $parsed_response );
+                    parse_str( $response['body'], $parsed_response );
 
-		$response = $parsed_response;
+                    $response = $parsed_response;
 
-	    $this->log( "Response:\n". print_r( $response, true ) );
+                $this->log( "Response:\n". print_r( $response, true ) );
 
-	    // Interpret Response
-	    if ( is_array( $response ) && in_array( 'VALID', array_keys( $response ) ) ) {
-	    	return true;
-	    } else {
-	    	return false;
-	    }
-	} // End validate_responses_data()
+                // Interpret Response
+                if ( is_array( $response ) && in_array( 'VALID', array_keys( $response ) ) ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } // End validate_responses_data()
 
-	/**
-	 * amounts_equal()
-	 *
-	 * Checks to see whether the given amounts are equal using a proper floating
-	 * point comparison with an Epsilon which ensures that insignificant decimal
-	 * places are ignored in the comparison.
-	 *
-	 * eg. 100.00 is equal to 100.0001
-	 *
-	 * @author Jonathan Smit
-	 * @param $amount1 Float 1st amount for comparison
-	 * @param $amount2 Float 2nd amount for comparison
-	 * @since 1.0.0
-	 */
-	function amounts_equal ( $amount1, $amount2 ) {
-		if( abs( floatval( $amount1 ) - floatval( $amount2 ) ) > PF_EPSILON ) {
-			return( false );
-		} else {
-			return( true );
-		}
-	} // End amounts_equal()
+            /**
+             * amounts_equal()
+             *
+             * Checks to see whether the given amounts are equal using a proper floating
+             * point comparison with an Epsilon which ensures that insignificant decimal
+             * places are ignored in the comparison.
+             *
+             * eg. 100.00 is equal to 100.0001
+             *
+             * @author Jonathan Smit
+             * @param $amount1 Float 1st amount for comparison
+             * @param $amount2 Float 2nd amount for comparison
+             * @since 1.0.0
+             */
+            function amounts_equal ( $amount1, $amount2 ) {
+                    if( abs( floatval( $amount1 ) - floatval( $amount2 ) ) > PF_EPSILON ) {
+                            return( false );
+                    } else {
+                            return( true );
+                    }
+            } // End amounts_equal()
 
 } // End Class

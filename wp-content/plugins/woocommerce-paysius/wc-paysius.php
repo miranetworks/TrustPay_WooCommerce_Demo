@@ -123,12 +123,11 @@ function wcpaysius_gateway_load() {
          * Checking if this gateway is enabled and available in the user's country.
          *
          * @return bool
-         */
+        */
         public function is_valid_for_use() {
             if ( ! in_array( get_woocommerce_currency(), array( 'BTC', 'USD' ) ) ) {
                 return false;
             }
-
             return true;
         }
 

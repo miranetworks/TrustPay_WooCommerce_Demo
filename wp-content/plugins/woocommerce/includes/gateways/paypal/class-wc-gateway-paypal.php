@@ -610,6 +610,7 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
 	}
 
 	/**
+         * 
 	 * Check for PayPal IPN Response
 	 *
 	 * @access public
@@ -635,6 +636,7 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
 
 	}
 
+        
 	/**
 	 * Successful Payment!
 	 *
